@@ -9,41 +9,28 @@
 | **??** | ?? ??? ?? · ??? ?? ???? |
 | **??** | 2026 |
 
-?? ??, UI, ???(????) ?? ??? ? ???? ??·???????.  
-??? ?? ?? ? `data/credits.js`? `creator` ??? ?????.
-
 ---
 
 ## ??? ?? ?? (3D ?? GLB)
 
-?? ??? **?? ???? ??**??, ????? ?? ?? ??? ?????.
+### Hugging Face — cutechicken / 3D Air Combat Simulator (CC BY-NC 4.0)
 
-### F-15 · F-16 · F-22 — Hugging Face
+| ?? | ?? | ?? |
+|------|------|------|
+| F-15 · F-16 · F-22 | f15.glb · f16.glb · f22.glb | models/f-15.glb ? |
+| MiG-29 | mig29.glb | models/mig-29.glb |
+| Su-35 | su35.glb | models/su-35.glb |
+| Su-57 | su57.glb | models/su-57.glb |
 
-| ?? | ?? |
-|------|------|
-| **??** | [cutechicken](https://huggingface.co/cutechicken) |
-| **??** | [3D Air Combat Simulator](https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator) |
-| **????** | [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) (???) |
-| **??** | *3D Air Combat Simulator* by cutechicken — CC BY-NC 4.0 |
+??: [3D Air Combat Simulator](https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator)  
+??: *3D Air Combat Simulator* by cutechicken — CC BY-NC 4.0
 
-### F-14 — Sketchfab *(??, ??? ? ??? ??)*
+### Sketchfab (CC BY 4.0) — ?? ???? ??
 
-| ?? | ?? |
-|------|------|
-| **??** | [dwsd](https://sketchfab.com/dwsd) |
-| **??** | [F-14 Tomcat Top Gun (Gear UP)](https://sketchfab.com/3d-models/f-14-tomcat-top-gun-gear-up-downloadable-9d2d0c87539046aa8c2198fcc47cdcf8) |
-| **????** | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
-| **??** | *F-14 Tomcat Top Gun (Gear UP)* by dwsd — CC BY 4.0 |
-
-### F/A-18E — Sketchfab *(??, ??? ? ??? ??)*
-
-| ?? | ?? |
-|------|------|
-| **??** | [andertan](https://sketchfab.com/andertan) |
-| **??** | [Boeing F/A-18E/F Super Hornet](https://sketchfab.com/3d-models/boeing-fa-18ef-super-hornet-f71e9fea01e24fea9b1b380161d21d38) |
-| **????** | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
-| **??** | *Boeing F/A-18E/F Super Hornet* by andertan — CC BY 4.0 |
+| ?? | ?? | ?? |
+|------|------|------|
+| F-14 | f14.glb | [dwsd](https://sketchfab.com/dwsd) |
+| F/A-18E | fa18.glb | [andertan](https://sketchfab.com/andertan) |
 
 ---
 
@@ -51,10 +38,5 @@
 
 | ?? | ???? |
 |------|----------|
-| [Three.js](https://threejs.org/) (CDN) | MIT |
-
----
-
-## ? GLB ?? ?
-
-1. ???? ?? ? 2. `assets/models/SOURCE.txt` ?? ? 3. ? ?? + ?? ??? ?? ????
+| [Three.js](https://threejs.org/) | MIT |
+| ??? ?? (GLB ?? ?) | ?? ??? |

@@ -4,40 +4,39 @@ Last verified: 2026-06-30
 === Hugging Face (CC BY-NC 4.0 — 비상업만 허용) ===
 Space: cutechicken/3D-Airforce-Simulator
 URL: https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator
-License metadata: cc-by-nc-4.0
 Attribution: "3D Air Combat Simulator" by cutechicken — CC BY-NC 4.0
+Auto-download: download-all-hf-models.bat
 
-F-16 — f16.glb
-  File: models/f-16.glb (~5.5 MB)
+| Local file   | HF source        | In-game use |
+|--------------|------------------|-------------|
+| f15.glb      | models/f-15.glb  | F-15 variants |
+| f16.glb      | models/f-16.glb  | F-16 variants |
+| f22.glb      | models/f-22.glb  | F-22 |
+| f35.glb      | models/f-35.glb  | (spare / future) |
+| a10.glb      | models/a-10.glb  | (spare — attack aircraft) |
+| mig29.glb    | models/mig-29.glb | MiG-29 variants |
+| su35.glb     | models/su-35.glb | Su-35 + Su-27/30/32 proxy |
+| su57.glb     | models/su-57.glb | Su-57 |
+| su57b.glb    | models/su-57b.glb | Su-57 alternate mesh |
 
-F-15 — f15.glb
-  File: models/f-15.glb (~5.2 MB)
+=== Sketchfab (CC BY — 표기 필수, 수동 다운로드) ===
+Auto-download NOT possible (login required). Run download-sketchfab-fighters.bat
 
-F-22 — f22.glb
-  File: models/f-22.glb (~4.9 MB)
-
-=== Sketchfab (CC BY 4.0 — 표기 필수, 상업 이용 가능) ===
-Optional — not bundled until manually downloaded.
-
-F-14 — f14.glb
-Source: dwsd / Sketchfab — F-14 Tomcat Top Gun (Gear UP)
-URL: https://sketchfab.com/3d-models/f-14-tomcat-top-gun-gear-up-downloadable-9d2d0c87539046aa8c2198fcc47cdcf8
-Steps:
-  1. Open URL above (or run download-f14-model.bat)
-  2. Download → glTF Binary (.glb)
-  3. Save as assets/models/f14.glb
-Attribution: "F-14 Tomcat Top Gun (Gear UP)" by dwsd — CC BY 4.0
-
-F/A-18E — fa18.glb
-Source: andertan / Sketchfab — Boeing F/A-18E/F Super Hornet
-URL: https://sketchfab.com/3d-models/boeing-fa-18ef-super-hornet-f71e9fea01e24fea9b1b380161d21d38
-Steps:
-  1. Open URL above (or run download-fa18-model.bat)
-  2. Download → glTF Binary (.glb)
-  3. Save as assets/models/fa18.glb
-Attribution: "Boeing F/A-18E/F Super Hornet" by andertan — CC BY 4.0
+| Local file   | Suggested source | License |
+|--------------|------------------|---------|
+| typhoon.glb  | andertan Eurofighter Typhoon EF-2000 | CC BY |
+| rafale.glb   | andertan Dassault Rafale | CC BY |
+| j10.glb      | andertan Chengdu J-10 | CC BY |
+| j20.glb      | Ryuukou J-20 Mighty Dragon | verify on page |
+| su27.glb     | andertan Su-27 (optional — su35 proxy used if missing) | CC BY |
+| su30.glb     | andertan Su-30 (optional) | CC BY |
+| tornado.glb  | Panavia Tornado on Sketchfab (search CC BY) | verify |
+| kf21.glb     | Tim_samedov KF-21 Boramae | verify |
+| fa50.glb     | NETRUNNER_pl FA-50 (may be paid) | verify |
+| f14.glb      | dwsd F-14 Tomcat Top Gun | CC BY |
+| fa18.glb     | andertan F/A-18E Super Hornet | CC BY |
 
 === Fallback ===
-If a .glb is missing or fails to load, procedural meshes in js/entities/Aircraft.js are used.
+Missing .glb → procedural mesh in js/entities/Aircraft.js
 
-Full credits: see CREDITS.md in project root.
+Full credits: CREDITS.md

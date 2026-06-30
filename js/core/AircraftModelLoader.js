@@ -6,7 +6,7 @@
 (function (Sky, THREE) {
   'use strict';
 
-  const LOADER_VERSION = 20260620;
+  const LOADER_VERSION = 20260630;
   const GROUND_PART_HINTS = ['landing', 'gear', 'wheel', 'tire', 'undercarriage'];
   const _centerScratch = new THREE.Vector3();
   const _sizeScratch = new THREE.Vector3();
@@ -48,6 +48,83 @@
     fa18: {
       url: './assets/models/fa18.glb',
       targetLength: 6.40,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    mig29: {
+      url: './assets/models/mig29.glb',
+      targetLength: 6.05,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    su35: {
+      url: './assets/models/su35.glb',
+      targetLength: 7.25,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    su57: {
+      url: './assets/models/su57.glb',
+      targetLength: 6.55,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    /* <!-- Su-27/30/32: HF? ?? GLB ?? ? su35.glb ??(Flanker ??). su27.glb ?? ?? ? URL ?? ?? --> */
+    su27: {
+      url: './assets/models/su35.glb',
+      targetLength: 7.15,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    su30: {
+      url: './assets/models/su35.glb',
+      targetLength: 7.20,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    su32: {
+      url: './assets/models/su35.glb',
+      targetLength: 7.25,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    typhoon: {
+      url: './assets/models/typhoon.glb',
+      targetLength: 6.35,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    rafale: {
+      url: './assets/models/rafale.glb',
+      targetLength: 6.30,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    tornado: {
+      url: './assets/models/tornado.glb',
+      targetLength: 7.05,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    kf21: {
+      url: './assets/models/kf21.glb',
+      targetLength: 6.50,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
+    fa50: {
+      url: './assets/models/fa50.glb',
+      targetLength: 5.85,
+      preset: 'xPlusToZPlus',
+    },
+    j10: {
+      url: './assets/models/j10.glb',
+      targetLength: 5.95,
+      preset: 'xPlusToZPlus',
+    },
+    j20: {
+      url: './assets/models/j20.glb',
+      targetLength: 6.55,
       preset: 'xPlusToZPlus',
       twinThrust: true,
     },

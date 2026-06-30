@@ -1415,7 +1415,13 @@ function buildF22Procedural(fighter) {
    - 쌍수직미익 — 약간 외측 캔트 (8도 정도)
    - 캐노피 앞 IRST/광학 센서 볼 (시그니처)
    - 윙 펜스(주익 위 작은 세로 판) */
-function buildMig29(fighter) {
+function buildMig29(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('mig29', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildMig29Procedural(fighter);
+}
+
+function buildMig29Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -1512,7 +1518,13 @@ function buildMig29(fighter) {
    - 캐노피 앞 IRST 볼 (오프셋 없이 중앙선)
    - 엔진 사이 거대한 "스팅거" 꼬리 페어링
    - 큰 쌍수직미익 + 보조 복부 핀 두 장 */
-function buildSu27(fighter) {
+function buildSu27(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('su27', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildSu27Procedural(fighter);
+}
+
+function buildSu27Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -1619,7 +1631,13 @@ function buildSu27(fighter) {
    - 추력편향 노즐(살짝 외측 캔트)
    주의: Su-27 빌더와 의도적으로 유사한 외형을 공유합니다.
         식별 포인트는 카나드와 탠덤 캐노피, 엔진 노즐 각도입니다. */
-function buildSu30(fighter) {
+function buildSu30(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('su30', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildSu30Procedural(fighter);
+}
+
+function buildSu30Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -1728,7 +1746,13 @@ function buildSu30(fighter) {
    - Su-27 베이스의 큰 LERX/주익은 유지
    - 폭격형이라 카나드는 유지(작은 가동면)
    - 늘어난 후방 페어링(레이더/체프) */
-function buildSu32(fighter) {
+function buildSu32(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('su32', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildSu32Procedural(fighter);
+}
+
+function buildSu32Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -1846,7 +1870,13 @@ function buildSu32(fighter) {
    - 강하게 캔트된 추력편향 노즐(외측 13도 + 살짝 다운)
    - 등쪽 페어링이 더 매끄럽고 노즈가 약간 더 굵음
    - 동체 측면 두꺼운 인테이크 (큰 출력) */
-function buildSu35(fighter) {
+function buildSu35(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('su35', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildSu35Procedural(fighter);
+}
+
+function buildSu35Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -1948,7 +1978,13 @@ function buildSu35(fighter) {
    - 평평한 윗면, 다이아몬드 단면 동체
    - DSI 형 곡선 흡입구 (스플리터 플레이트 없음)
    - 둥근 3D 추력편향 노즐 */
-function buildSu57(fighter) {
+function buildSu57(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('su57', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildSu57Procedural(fighter);
+}
+
+function buildSu57Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -2048,7 +2084,13 @@ function buildSu57(fighter) {
    - 단일 매우 큰 수직 미익
    - 턱밑 사각 흡입구 (단일 통합)
    - 쌍발 EJ200, 노즐 두 개가 가까이 */
-function buildTyphoon(fighter) {
+function buildTyphoon(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('typhoon', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildTyphoonProcedural(fighter);
+}
+
+function buildTyphoonProcedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -2129,7 +2171,13 @@ function buildTyphoon(fighter) {
    - 반원형 측면 흡입구 (반월형)
    - 쌍발 M88
    - 고정형 공중급유 프로브 (우현 노즈 옆) */
-function buildRafale(fighter) {
+function buildRafale(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('rafale', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildRafaleProcedural(fighter);
+}
+
+function buildRafaleProcedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -2208,7 +2256,13 @@ function buildRafale(fighter) {
    - 직사각 측면 흡입구
    - 2인 탠덤 캐노피
    - 고정형 공중급유 프로브 (우현) */
-function buildTornado(fighter) {
+function buildTornado(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('tornado', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildTornadoProcedural(fighter);
+}
+
+function buildTornadoProcedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -2311,7 +2365,13 @@ function buildTornado(fighter) {
    - DSI(Diverterless Supersonic Inlet) — 흡입구 앞 동체에 부드러운 융기
    - F-22 보다 작고 덜 각진, F-16 보다 큰 4.5세대 형상
    - Block 1 은 외부 무장창 (내부 무장창 미장착) */
-function buildKF21(fighter) {
+function buildKF21(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('kf21', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildKF21Procedural(fighter);
+}
+
+function buildKF21Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -2385,7 +2445,13 @@ function buildKF21(fighter) {
    - 작은 측면 흡입구, 짧은 노즈
    - 단일 수직미익, 비교적 짧은 주익
    - LEX (작은 leading edge extension) */
-function buildFA50(fighter) {
+function buildFA50(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('fa50', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildFA50Procedural(fighter);
+}
+
+function buildFA50Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -2463,7 +2529,13 @@ function buildFA50(fighter) {
    - 복부 핀 두 장 (스텔스기 중 드문 특징)
    - DSI 흡입구
    - 길고 평평한 노즈 */
-function buildJ20(fighter) {
+function buildJ20(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('j20', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildJ20Procedural(fighter);
+}
+
+function buildJ20Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -2548,7 +2620,13 @@ function buildJ20(fighter) {
    - 배밑 직사각형 흡입구 (J-10A 시그니처, 분리된 splitter plate)
    - 단일 큰 수직미익
    - 두 장 복부 핀 */
-function buildJ10(fighter) {
+function buildJ10(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('j10', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildJ10Procedural(fighter);
+}
+
+function buildJ10Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -2669,7 +2747,11 @@ const BUILDERS = {
   j10: buildJ10,
 };
 
-const GLTF_FIRST_MESH_TYPES = new Set(['f16', 'f15', 'f14', 'f22', 'fa18']);
+const GLTF_FIRST_MESH_TYPES = new Set([
+  'f16', 'f15', 'f14', 'f22', 'fa18',
+  'mig29', 'su27', 'su30', 'su32', 'su35', 'su57',
+  'typhoon', 'rafale', 'tornado', 'kf21', 'fa50', 'j10', 'j20',
+]);
 
 function buildAircraftMesh(fighter, options) {
   const meshType = fighter?.meshType;

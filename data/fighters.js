@@ -235,7 +235,8 @@ const FIGHTERS = [
     modelName: 'F-22 Raptor',
     stats: { speed: 165, agility: 130, armor: 100, fuel: 130 },
     weapons: { primary: 'machine_gun', secondary: 6 },
-    assets: { prefabPath: 'Prefabs/Fighters/F22', thumbnailPath: 'UI/Thumbnails/f22.png' },
+    /* <!-- modelKey: GLB 로더가 이 키로 ./assets/models/f22.glb 자동 매칭 --> */
+    assets: { prefabPath: 'assets/models/f22.glb', thumbnailPath: 'UI/Thumbnails/f22.png', modelKey: 'f22' },
     price: 50000,
     palette: { body: 0x3a3f48, accent: 0x1e2228, cockpit: 0x0d1018 },
     description: '5세대 스텔스 제공기. 다이아몬드 평면형과 바깥쪽으로 기울어진 두 장의 수직미익이 특징입니다.',

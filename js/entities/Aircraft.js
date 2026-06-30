@@ -1177,101 +1177,223 @@ function buildF14Procedural(fighter) {
 }
 
 /* ====================== F-22 Raptor ======================
-   참고 형상: Lockheed F-22A.
-   - 5세대 스텔스: 모든 면이 평면 패싯(faceted)
-   - 트라페조이드 주익 (단순 다이아몬드 아님), 윙 끝이 약간 잘림
-   - 외측 28도 강하게 캔트된 쌍수직미익 + 거의 같은 각도의 수평미익
-   - 캐럿 흡입구(앞에서 보면 평행사변형, 후방으로 갈수록 안쪽으로 sweep)
-   - 사각 2D 추력편향 노즐 (Pitch만)
-   - 내부 무장창 (외부 미사일 없음) */
-function buildF22(fighter) {
+   GLB 우선(F-16/F-15/F-14와 동일). assets/models/f22.glb 필요.
+   GLB가 없거나 HTTPS/HTTP가 아닐 때는 사진 5장(정면·윗면×2·측면·아랫면) 기준
+   절차적 메쉬로 폴백. 착륙장치(바퀴)는 제외.
+
+   절차적 폴백 시그니처 디테일:
+    1) 날카로운 다이아몬드 라돔 + 피토
+    2) 노즈→wing root 챔퍼(chine) 라인 (planform alignment)
+    3) 캐럿(caret) 흡입구 — 정면 평행사변형, 외측 sweep
+    4) 1인 골드 틴트 버블 캐노피
+    5) 클립트 다이아몬드 주익 (LE ~42°, TE ~17° sweep)
+    6) 블렌디드 윙-바디 + 상부 플랫 덱 + 평평한 복부
+    7) aft twin engine humps
+    8) 중앙·측면 내부 무장창 라인 + sawtooth 도어 edge
+    9) 28° 외측 캔트 쌍수직미익 (클립트 윗변)
+   10) 주익과 정렬된 다이아몬드 all-moving taileron
+   11) 사각 2D 추력편향 노즐 + chevron 배기 가장자리
+   12) 2톤 로비저빌리티 캠o 패치
+   13) 외부 미사일 없음 (내부 무장창만) */
+function buildF22(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('f22', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildF22Procedural(fighter);
+}
+
+function buildF22Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
-  /* 동체: 라운드된 베이스 위에 챔퍼 패널을 덧대 다이아몬드 단면을 흉내냄.
-     실사 F-22 도 동체 자체는 매끄럽게 라운드되어 있고, 챔퍼/패싯이 그 위에 얹혀 있음. */
-  const body = roundedBody(1.5, 0.8, 4.2, m.body);
-  g.add(body);
-  /* 등쪽 페어링 (평평한 느낌은 챔퍼로, 동체는 살짝 라운드) */
-  const topDeck = roundedBody(1.05, 0.18, 3.0, m.bodyAlt);
-  topDeck.position.set(0, 0.48, -0.4);
+  /* <!-- 골드/앰ber 틴트 캐노피: 윗면·측면 사진의 반사 코팅 --> */
+  const canopyMat = m.cockpit.clone();
+  canopyMat.color = new THREE.Color(0x2a2418);
+  canopyMat.emissive = new THREE.Color(0x4a3820);
+  canopyMat.emissiveIntensity = 0.38;
+
+  /* 1) 중앙 동체: 블렌디드 윙-바디 베이스 */
+  const coreBody = roundedBody(1.38, 0.54, 4.60, m.body);
+  coreBody.position.set(0, 0.02, -0.12);
+  g.add(coreBody);
+
+  /* 2) 상부 플랫 덱 (윗면 사진의 평평한 스텔스 상면) */
+  const topDeck = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.14, 3.40), m.bodyAlt);
+  topDeck.position.set(0, 0.37, -0.32);
   g.add(topDeck);
-  /* 챔퍼된 측면 (다이아몬드 단면 흉내 - 측면에 비스듬한 패널) */
-  const chineGeo = new THREE.BoxGeometry(0.18, 0.4, 3.4);
-  const chineL = new THREE.Mesh(chineGeo, m.bodyAlt);
-  chineL.position.set(-0.82, 0.12, -0.2);
-  chineL.rotation.z = -0.45;
-  const chineR = chineL.clone();
-  chineR.position.x = 0.82;
-  chineR.rotation.z = 0.45;
-  g.add(chineL, chineR);
 
-  /* 노즈: 챔퍼된 다이아몬드 단면 (4각 콘) + 챔퍼 라인 */
-  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1.85, 4), m.body);
-  nose.rotation.x = Math.PI / 2;
-  nose.rotation.z = Math.PI / 4; // 다이아몬드 단면을 위해 45도 회전
-  nose.position.set(0, 0, 2.2);
-  g.add(nose);
-  addPitot(g, m.dark, 3.2);
+  /* 3) 복부 플랫 판 (아랫면 사진의 넓은 평평한 벨리) */
+  const bellyPlate = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.10, 3.70), m.bodyDark);
+  bellyPlate.position.set(0, -0.29, -0.04);
+  g.add(bellyPlate);
 
-  /* 캐럿 흡입구: 평행사변형 박스를 외측으로 살짝 sweep */
-  const intakeGeo = new THREE.BoxGeometry(0.45, 0.48, 1.4);
-  const inL = new THREE.Mesh(intakeGeo, m.bodyAlt);
-  inL.position.set(-0.78, -0.05, 0.65);
-  inL.rotation.y = -0.18; // 외측 sweep
-  const inR = inL.clone();
-  inR.position.x = 0.78;
-  inR.rotation.y = 0.18;
-  g.add(inL, inR);
-  /* 흡입구 입구: 비스듬한 평행사변형 (PlaneGeometry 회전) */
-  const mGeo = new THREE.PlaneGeometry(0.4, 0.42);
-  const mL = new THREE.Mesh(mGeo, m.intake);
-  mL.position.set(-0.86, -0.05, 1.32);
-  mL.rotation.y = -0.18;
-  const mR = mL.clone();
-  mR.position.x = 0.86;
-  mR.rotation.y = 0.18;
-  g.add(mL, mR);
+  /* 4) aft twin engine humps (윗면·측면의 후방 엔진 융기) */
+  for (const side of [-1, 1]) {
+    const hump = roundedBody(0.74, 0.50, 2.20, m.bodyAlt);
+    hump.position.set(side * 0.64, 0.15, -1.62);
+    g.add(hump);
+  }
 
-  /* 캐노피 — 골드 색감을 위해 emissive 살짝 강조 (cockpit material) */
-  addCanopy(g, m.cockpit, 0, 0.5, 0.95, 0.92, 0.5, 1.75);
+  /* 5) 노즈: 날카로운 다이아몬드 라돔 (정면·측면) */
+  const noseCone = new THREE.Mesh(new THREE.ConeGeometry(0.36, 2.05, 4), m.radome);
+  noseCone.rotation.x = Math.PI / 2;
+  noseCone.rotation.z = Math.PI / 4;
+  noseCone.position.set(0, 0.04, 2.68);
+  g.add(noseCone);
 
-  /* 트라페조이드 주익 (위에서 보면 사다리꼴, 단순 델타 아님) */
-  const wing = planform([
-    [ 0.75,  0.7], [ 3.2, -0.5], [ 3.0, -1.3], [ 0.75, -1.5],
-    [-0.75, -1.5], [-3.0, -1.3], [-3.2, -0.5], [-0.75,  0.7],
-  ], 0.12, m.body);
-  wing.position.y = -0.02;
-  g.add(wing);
+  const noseBase = roundedBody(0.74, 0.50, 1.18, m.body);
+  noseBase.position.set(0, 0.02, 1.88);
+  g.add(noseBase);
+  addPitot(g, m.dark, 3.42);
 
-  /* 내부 무장창 라인 (스텔스 특징 - 외부 미사일 없음 대신 라인만) */
-  const bayLineL = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.02, 1.3), m.dark);
-  bayLineL.position.set(-0.4, -0.43, 0.0);
-  const bayLineR = bayLineL.clone();
-  bayLineR.position.x = 0.4;
-  g.add(bayLineL, bayLineR);
+  /* 6) 챔퍼(chine): 노즈 끝→wing LE까지 날카로운 측면 모서리 (정면·윗면) */
+  for (const side of [-1, 1]) {
+    const chineUpper = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.22, 3.90), m.bodyAlt);
+    chineUpper.position.set(side * 0.80, 0.10, 0.02);
+    chineUpper.rotation.z = side * -0.52;
+    g.add(chineUpper);
 
-  /* 외측 28도 강하게 캔트된 쌍수직미익 */
-  addTwinVerticalStabs(g, m.body, { width: 0.1, height: 1.05, depth: 1.35, xSpan: 0.78, y: 0.55, z: -1.55, roll: 0.5 });
+    const chineLower = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.18, 3.60), m.bodyDark);
+    chineLower.position.set(side * 0.70, -0.15, -0.06);
+    chineLower.rotation.z = side * 0.48;
+    g.add(chineLower);
 
-  /* 다이아몬드형 수평 미익 (수직미익과 같은 평면각으로 캔트) */
+    /* wing LE 위 챔퍼 연장 (planform alignment) */
+    const chineWing = planform([
+      [side * 0.88,  0.65],
+      [side * 2.44, -0.12],
+      [side * 2.42, -0.32],
+      [side * 0.88,  0.22],
+    ], 0.06, m.bodyAlt);
+    chineWing.position.set(0, 0.19, -0.06);
+    g.add(chineWing);
+  }
+
+  /* 7) 캐럿(caret) 흡입구: 정면 평행사변형 + 측면 sweep (정면·측면 사진) */
+  for (const side of [-1, 1]) {
+    const duct = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.44, 1.48), m.bodyAlt);
+    duct.position.set(side * 0.94, -0.06, 0.74);
+    duct.rotation.y = side * 0.24;
+    duct.rotation.z = side * -0.13;
+    g.add(duct);
+
+    const mouth = new THREE.Mesh(new THREE.PlaneGeometry(0.50, 0.40), m.intake);
+    mouth.position.set(side * 1.04, -0.04, 1.50);
+    mouth.rotation.y = side * 0.24;
+    mouth.rotation.z = side * -0.15;
+    g.add(mouth);
+
+    const lip = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.04, 1.38), m.bodyDark);
+    lip.position.set(side * 0.90, 0.13, 0.72);
+    lip.rotation.y = side * 0.22;
+    g.add(lip);
+  }
+
+  /* 8) 1인 골드 틴트 버블 캐노피 (측면·윗면: 전방 배치) */
+  addCanopy(g, canopyMat, 0, 0.47, 1.08, 0.90, 0.52, 1.72);
+
+  const canopyFairing = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.16, 0.50), m.bodyDark);
+  canopyFairing.position.set(0, 0.39, 0.44);
+  g.add(canopyFairing);
+
+  /* 9) 클립트 다이아몬드 주익 (윗면 사진: LE sweep ~42°, TE forward sweep, clipped tip) */
+  const mainWing = planform([
+    [ 0.90,  0.64], [ 2.44, -0.20], [ 2.44, -0.56], [ 0.90, -1.10],
+    [-0.90, -1.10], [-2.44, -0.56], [-2.44, -0.20], [-0.90,  0.64],
+  ], 0.11, m.body);
+  mainWing.position.set(0, 0.01, -0.06);
+  g.add(mainWing);
+
+  for (const side of [-1, 1]) {
+    const rootFair = planform([
+      [side * 0.90,  0.64],
+      [side * 1.38,  0.14],
+      [side * 1.38, -0.56],
+      [side * 0.90, -0.76],
+    ], 0.14, m.bodyAlt);
+    rootFair.position.set(0, 0.06, -0.06);
+    g.add(rootFair);
+  }
+
+  /* 10) 내부 무장창 (아랫면·측면: 외부 미사일 없음, 도어 라인만) */
+  const mainBay = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.025, 2.10), m.dark);
+  mainBay.position.set(0, -0.345, -0.10);
+  g.add(mainBay);
+
+  for (const side of [-1, 1]) {
+    const sideBay = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.022, 0.98), m.dark);
+    sideBay.position.set(side * 0.56, -0.338, 0.38);
+    g.add(sideBay);
+
+    /* sawtooth edge: 스텔스 톱니 도어 (아랫면 사진) */
+    for (let i = 0; i < 4; i++) {
+      const tooth = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.03, 0.06), m.dark);
+      tooth.position.set(side * (0.40 + i * 0.09), -0.352, -0.22 + i * 0.18);
+      tooth.rotation.z = side * 0.55;
+      g.add(tooth);
+    }
+  }
+
+  /* 복부 센서/접근 포트 (아랫면 사진의 작은 돔) */
+  for (const pz of [-0.52, 0.18, 0.75]) {
+    const port = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.025, 8), m.bodyDark);
+    port.rotation.x = Math.PI / 2;
+    port.position.set(0, -0.348, pz);
+    g.add(port);
+  }
+
+  /* 11) 28° 외측 캔트 쌍수직미익 (정면·측면: V자형 twin tail) */
+  addTwinVerticalStabs(g, m.body, {
+    rootSpan: 1.45,
+    tipSpan: 0.30,
+    height: 1.15,
+    thickness: 0.09,
+    xSpan: 0.76,
+    yBase: 0.55,
+    zCenter: -2.02,
+    roll: 0.49,
+    sweep: 0.24,
+    rootEmbed: 0.30,
+  });
+
+  /* 12) 다이아몬드 all-moving taileron (윗면: 주익과 동일 sweep 정렬) */
   const hStab = planform([
-    [ 0.4,  0.25], [ 1.65, -0.55], [ 1.65, -0.95], [ 0.4, -0.8],
-    [-0.4, -0.8], [-1.65, -0.95], [-1.65, -0.55], [-0.4,  0.25],
-  ], 0.08, m.body);
-  hStab.position.set(0, -0.02, -2.05);
+    [ 0.54,  0.18], [ 1.75, -0.46], [ 1.75, -0.84], [ 0.54, -0.74],
+    [-0.54, -0.74], [-1.75, -0.84], [-1.75, -0.46], [-0.54,  0.18],
+  ], 0.075, m.bodyAlt);
+  hStab.position.set(0, 0.0, -2.44);
   g.add(hStab);
 
-  /* 사각 2D 추력편향 노즐 — F-22의 시그니처. 좌우 박스로 표현. */
-  const nzGeo = new THREE.BoxGeometry(0.6, 0.32, 0.55);
-  const nzL = new THREE.Mesh(nzGeo, m.dark);
-  nzL.position.set(-0.45, -0.05, -2.35);
-  const nzR = nzL.clone();
-  nzR.position.x = 0.45;
-  g.add(nzL, nzR);
+  /* 13) 사각 2D 추력편향 노즐 + chevron (측면·아랫면: flat rectangular nozzle) */
+  for (const side of [-1, 1]) {
+    const nzOuter = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.30, 0.64), m.dark);
+    nzOuter.position.set(side * 0.50, -0.02, -2.98);
+    g.add(nzOuter);
 
-  addThrust(g, m.glow, -0.45, -2.85, 0.28, 0.85);
-  addThrust(g, m.glow.clone(),  0.45, -2.85, 0.28, 0.85);
+    const chevron = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.06, 0.12), m.bodyDark);
+    chevron.position.set(side * 0.50, -0.15, -3.22);
+    g.add(chevron);
+
+    const throat = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.24), m.intake);
+    throat.position.set(side * 0.50, -0.02, -3.26);
+    throat.rotation.y = Math.PI;
+    g.add(throat);
+
+    addThrust(g, m.glow, side * 0.50, -3.46, 0.26, 0.95);
+  }
+
+  /* 14) 2톤 로비저빌리티 캠o 패치 (윗면 사진) */
+  [
+    { w: 0.78, h: 0.04, d: 1.48, x: 0, y: 0.405, z: -0.52 },
+    { w: 1.38, h: 0.035, d: 0.88, x: 0, y: 0.405, z: -1.38 },
+    { w: 0.58, h: 0.04, d: 1.12, x: -1.68, y: 0.065, z: -0.32 },
+    { w: 0.58, h: 0.04, d: 1.12, x: 1.68, y: 0.065, z: -0.32 },
+  ].forEach((p) => {
+    const patch = new THREE.Mesh(new THREE.BoxGeometry(p.w, p.h, p.d), m.camo);
+    patch.position.set(p.x, p.y, p.z);
+    g.add(patch);
+  });
+
+  g.userData.procedural = true;
   return g;
 }
 

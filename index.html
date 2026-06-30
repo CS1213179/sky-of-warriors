@@ -88,6 +88,9 @@
     </div>
   </div>
 
+  <!-- 크레딧 (로그인·메인 메뉴에서만 표시) -->
+  <button type="button" id="credits-corner-btn" class="credits-corner-btn hidden" data-action="credits" aria-label="크레딧">크레딧</button>
+
   <!-- 로그인 화면 -->
   <section id="screen-login" class="screen">
     <div class="menu-card login-card">
@@ -162,6 +165,45 @@
         <button type="button" class="btn btn-danger" data-action="delete-account-yes">예</button>
         <button type="button" class="btn" data-action="delete-account-no">아니오</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 크레딧 · 라이선스 (외부 3D 모델 표기) -->
+  <div id="credits-modal" class="modal hidden" aria-hidden="true" aria-labelledby="credits-title">
+    <div class="modal-card credits-card">
+      <h2 id="credits-title">크레딧</h2>
+      <section class="credits-game-block" aria-labelledby="credits-game-heading">
+        <h3 id="credits-game-heading" class="credits-section-label">게임 제작</h3>
+        <p class="credits-game-title">Sky of Warriors</p>
+        <p id="credits-creator-line" class="credits-creator-line">—</p>
+        <p class="hint hint-sub credits-game-note">학교 방과후 활동 · 비상업 취미 프로젝트</p>
+      </section>
+      <h3 class="credits-section-label">사용한 외부 자산</h3>
+      <p class="hint credits-nc-note">일부 3D 모델(F-15·F-16·F-22)은 <b>CC BY-NC 4.0</b> — 비상업 이용만 허용됩니다.</p>
+      <ul class="credits-list">
+        <li>
+          <strong>F-15 · F-16 · F-22 GLB</strong>
+          <span><a href="https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator" target="_blank" rel="noopener noreferrer">3D Air Combat Simulator</a> by cutechicken — CC BY-NC 4.0</span>
+        </li>
+        <li>
+          <strong>F-14 GLB</strong> <em>(선택)</em>
+          <span><a href="https://sketchfab.com/3d-models/f-14-tomcat-top-gun-gear-up-downloadable-9d2d0c87539046aa8c2198fcc47cdcf8" target="_blank" rel="noopener noreferrer">F-14 Tomcat Top Gun (Gear UP)</a> by dwsd — CC BY 4.0</span>
+        </li>
+        <li>
+          <strong>F/A-18 GLB</strong> <em>(선택)</em>
+          <span><a href="https://sketchfab.com/3d-models/boeing-fa-18ef-super-hornet-f71e9fea01e24fea9b1b380161d21d38" target="_blank" rel="noopener noreferrer">Boeing F/A-18E/F Super Hornet</a> by andertan — CC BY 4.0</span>
+        </li>
+        <li>
+          <strong>절차적 기체 메시</strong>
+          <span>GLB 미포함·로드 실패 시 게임 제작자가 직접 제작</span>
+        </li>
+        <li>
+          <strong>Three.js</strong>
+          <span><a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">threejs.org</a> — MIT License</span>
+        </li>
+      </ul>
+      <p class="hint hint-sub">전체 목록: 저장소 루트 <code>CREDITS.md</code></p>
+      <button type="button" class="btn btn-primary" data-action="credits-close">닫기</button>
     </div>
   </div>
 
@@ -458,6 +500,7 @@
     이 방식 덕분에 index.html 을 더블클릭(file://)으로 열어도 정상 동작합니다.
   -->
   <script src="./data/fighters.js?v=20260620"></script>
+  <script src="./data/credits.js?v=20260630"></script>
   <script src="./js/core/currency.js?v=20260604"></script>
   <script src="./js/core/Achievements.js?v=20260604"></script>
   <script src="./js/core/KmBuffs.js?v=20260604"></script>

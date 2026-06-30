@@ -15,10 +15,46 @@
     if (canvas) canvas.style.pointerEvents = inBattle ? 'auto' : 'none';
   }
 
+  function paintCreditsModal() {
+    const meta = Sky.projectCredits || {};
+    const line = document.getElementById('credits-creator-line');
+    if (!line) return;
+    const creator = meta.creator || '제작자';
+    const context = meta.context || 'Sky of Warriors';
+    const year = meta.year ? ` · ${meta.year}` : '';
+    line.textContent = `제작 ${creator} — ${context}${year}`;
+  }
+
+  function updateCreditsCornerBtn(sceneName) {
+    const btn = document.getElementById('credits-corner-btn');
+    if (!btn) return;
+    const show = sceneName === 'login' || sceneName === 'menu';
+    btn.classList.toggle('hidden', !show);
+  }
+
+  function bindCreditsUi() {
+    const modal = document.getElementById('credits-modal');
+    const btn = document.getElementById('credits-corner-btn');
+    paintCreditsModal();
+
+    const showCredits = () => {
+      modal?.classList.remove('hidden');
+      modal?.setAttribute('aria-hidden', 'false');
+    };
+    const hideCredits = () => {
+      modal?.classList.add('hidden');
+      modal?.setAttribute('aria-hidden', 'true');
+    };
+
+    btn?.addEventListener('click', showCredits);
+    modal?.querySelector('[data-action="credits-close"]')?.addEventListener('click', hideCredits);
+  }
+
   function showLoginScreen() {
     document.querySelectorAll('.screen').forEach((el) => el.classList.remove('active'));
     document.getElementById('screen-login')?.classList.add('active');
     setCanvasInteractive(false);
+    updateCreditsCornerBtn('login');
     _loginManager?.enter?.();
   }
 
@@ -83,9 +119,11 @@
     const net = Sky.NetManager.getInstance();
 
     _scenes = new Sky.SceneManager();
+    bindCreditsUi();
     const sceneShow = _scenes.show.bind(_scenes);
     _scenes.show = function (name, payload) {
       sceneShow(name, payload);
+      updateCreditsCornerBtn(name);
       if (name === 'achievements') {
         const paint = Sky.paintAchievementsScreen;
         if (typeof paint === 'function') {

@@ -1,37 +1,43 @@
 3D model sources (GLB)
+Last verified: 2026-06-30
+
+=== Hugging Face (CC BY-NC 4.0 — 비상업만 허용) ===
+Space: cutechicken/3D-Airforce-Simulator
+URL: https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator
+License metadata: cc-by-nc-4.0
+Attribution: "3D Air Combat Simulator" by cutechicken — CC BY-NC 4.0
 
 F-16 — f16.glb
-Source: cutechicken/3D-Airforce-Simulator (Hugging Face Spaces)
-URL: https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator
-File: models/f-16.glb (~5.5 MB)
+  File: models/f-16.glb (~5.5 MB)
 
 F-15 — f15.glb
-Source: cutechicken/3D-Airforce-Simulator (Hugging Face Spaces)
-URL: https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator
-File: models/f-15.glb (~5.2 MB)
+  File: models/f-15.glb (~5.2 MB)
 
 F-22 — f22.glb
-Source: cutechicken/3D-Airforce-Simulator (Hugging Face Spaces)
-URL: https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator
-File: models/f-22.glb (~4.9 MB)
+  File: models/f-22.glb (~4.9 MB)
 
-F-14 — f14.glb (Sketchfab — not in HuggingFace pack)
+=== Sketchfab (CC BY 4.0 — 표기 필수, 상업 이용 가능) ===
+Optional — not bundled until manually downloaded.
+
+F-14 — f14.glb
 Source: dwsd / Sketchfab — F-14 Tomcat Top Gun (Gear UP)
 URL: https://sketchfab.com/3d-models/f-14-tomcat-top-gun-gear-up-downloadable-9d2d0c87539046aa8c2198fcc47cdcf8
 Steps:
-1. Open URL above (or run download-f14-model.bat)
-2. Download → glTF Binary (.glb)
-3. Save as assets/models/f14.glb
-License: CC Attribution (dwsd / Sketchfab). Credit the author if redistributing.
+  1. Open URL above (or run download-f14-model.bat)
+  2. Download → glTF Binary (.glb)
+  3. Save as assets/models/f14.glb
+Attribution: "F-14 Tomcat Top Gun (Gear UP)" by dwsd — CC BY 4.0
 
-F/A-18E — fa18.glb (Sketchfab — not in HuggingFace pack)
+F/A-18E — fa18.glb
 Source: andertan / Sketchfab — Boeing F/A-18E/F Super Hornet
 URL: https://sketchfab.com/3d-models/boeing-fa-18ef-super-hornet-f71e9fea01e24fea9b1b380161d21d38
 Steps:
-1. Open URL above (or run download-fa18-model.bat)
-2. Download → glTF Binary (.glb)
-3. Save as assets/models/fa18.glb
-License: CC Attribution (andertan / Sketchfab). Credit the author if redistributing.
+  1. Open URL above (or run download-fa18-model.bat)
+  2. Download → glTF Binary (.glb)
+  3. Save as assets/models/fa18.glb
+Attribution: "Boeing F/A-18E/F Super Hornet" by andertan — CC BY 4.0
 
-Used for in-game fighter visual meshes via GLTFLoader.
-If redistributing, verify the upstream license on each repository.
+=== Fallback ===
+If a .glb is missing or fails to load, procedural meshes in js/entities/Aircraft.js are used.
+
+Full credits: see CREDITS.md in project root.

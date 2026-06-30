@@ -221,7 +221,11 @@ const FIGHTERS = [
     modelName: 'F/A-18E Super Hornet',
     stats: { speed: 148, agility: 115, armor: 88, fuel: 125 },
     weapons: { primary: 'machine_gun', secondary: 5 },
-    assets: { prefabPath: 'Prefabs/Fighters/FA18E', thumbnailPath: 'UI/Thumbnails/fa18e.png' },
+    assets: {
+      prefabPath: 'assets/models/fa18.glb',
+      thumbnailPath: 'UI/Thumbnails/fa18e.png',
+      modelKey: 'fa18',
+    },
     price: 32000,
     palette: { body: 0x7a8794, accent: 0x2a3540, cockpit: 0x141c28 },
     description: '함재 다목적 전투기. LERX와 캔트 수직미익, 견고한 함상 운용성이 특징입니다.',

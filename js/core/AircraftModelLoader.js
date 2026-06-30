@@ -41,6 +41,16 @@
       preset: 'xPlusToZPlus',
       twinThrust: true,
     },
+    /* <!--
+      F/A-18E Super Hornet: ?? 18.31m, F-16(15.06m) ?? ? 1.22? ? ?? ? 6.40.
+      ?? F414 ? twinThrust=true.
+    --> */
+    fa18: {
+      url: './assets/models/fa18.glb',
+      targetLength: 6.40,
+      preset: 'xPlusToZPlus',
+      twinThrust: true,
+    },
   };
 
   const _templates = new Map();

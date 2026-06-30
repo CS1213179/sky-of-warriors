@@ -868,11 +868,20 @@ function buildF15Procedural(fighter) {
 }
 
 /* ====================== F/A-18E Super Hornet ======================
-   참고 형상: Boeing F/A-18E.
+   GLB 우선(F-16/F-15/F-22와 동일). assets/models/fa18.glb 필요.
+   GLB가 없을 때 절차적 메쉬로 폴백.
+
+   절차적 폴백 참고 형상: Boeing F/A-18E.
    - 쌍발 엔진, 측면 흡입구, LERX
    - 외측으로 기울어진(캔트) 쌍수직미익
    - 함재 다목적기 실루엣 (F-15보다 소형) */
-function buildFa18(fighter) {
+function buildFa18(fighter, options) {
+  const gltfMesh = Sky.AircraftModelLoader?.getClone?.('fa18', fighter, options);
+  if (gltfMesh) return gltfMesh;
+  return buildFa18Procedural(fighter);
+}
+
+function buildFa18Procedural(fighter) {
   const m = makeMaterials(fighter.palette);
   const g = new THREE.Group();
 
@@ -935,6 +944,7 @@ function buildFa18(fighter) {
     g.add(nz);
     addThrust(g, m.glow, x, -2.65, 0.3, 0.9);
   });
+  g.userData.procedural = true;
   return g;
 }
 
@@ -2659,11 +2669,13 @@ const BUILDERS = {
   j10: buildJ10,
 };
 
+const GLTF_FIRST_MESH_TYPES = new Set(['f16', 'f15', 'f14', 'f22', 'fa18']);
+
 function buildAircraftMesh(fighter, options) {
   const meshType = fighter?.meshType;
   const builder = BUILDERS[meshType] ?? buildGeneric;
   try {
-    const group = (meshType === 'f16' || meshType === 'f15' || meshType === 'f14')
+    const group = GLTF_FIRST_MESH_TYPES.has(meshType)
       ? BUILDERS[meshType](fighter ?? {}, options)
       : builder(fighter ?? {});
     group.name = fighter?.modelName ?? 'Aircraft';

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="ÉÐ ‘ lí">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7eb8e8"/>
+      <stop offset="100%" stop-color="#d6ecfa"/>
+    </linearGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 0.06"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <rect y="190" width="1280" height="530" fill="#7a9458"/>
+  <rect x="80" y="360" width="220" height="140" fill="#8aa868" opacity="0.75" transform="rotate(-8 190 430)"/>
+  <rect x="340" y="330" width="260" height="160" fill="#6a8848" opacity="0.7" transform="rotate(4 470 410)"/>
+  <rect x="680" y="350" width="240" height="150" fill="#8aa868" opacity="0.72" transform="rotate(-3 800 425)"/>
+  <rect x="980" y="370" width="200" height="130" fill="#5a7848" opacity="0.68" transform="rotate(6 1080 435)"/>
+  <path d="M0 480 Q420 440 840 470 T1280 450 L1280 720 L0 720 Z" fill="#5a7848" opacity="0.55"/>
+  <rect width="1280" height="720" filter="url(#grain)" opacity="0.28"/>
+</svg>

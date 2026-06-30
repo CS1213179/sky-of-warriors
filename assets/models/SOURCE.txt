@@ -1,0 +1,21 @@
+3D model sources (GLB)
+
+F-16 — f16.glb
+Source: cutechicken/3D-Airforce-Simulator (Hugging Face Spaces)
+URL: https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator
+File: models/f-16.glb (~5.5 MB)
+
+F-15 — f15.glb
+Source: cutechicken/3D-Airforce-Simulator (Hugging Face Spaces)
+URL: https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator
+File: models/f-15.glb (~5.2 MB)
+
+F-14 — f14.glb (required for high-quality Tomcat mesh)
+The Hugging Face airforce pack does NOT include F-14. Place the file manually:
+1. Open https://sketchfab.com/3d-models/f-14-tomcat-top-gun-gear-up-downloadable-9d2d0c87539046aa8c2198fcc47cdcf8
+2. Download → glTF Binary (.glb)
+3. Save as assets/models/f14.glb
+License: CC Attribution (dwsd / Sketchfab). Credit the author if redistributing.
+
+Used for in-game fighter visual meshes via GLTFLoader.
+If redistributing, verify the upstream license on each repository.

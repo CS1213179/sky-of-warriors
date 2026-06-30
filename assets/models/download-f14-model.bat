@@ -1,0 +1,12 @@
+@echo off
+chcp 65001 >nul
+echo F-14 Tomcat GLB ?? ???? ??
+echo.
+echo 1) Sketchfab ???? ????.
+echo 2) Download ^> glTF Binary (.glb) ? ?????.
+echo 3) ?? ??? ? ??? f14.glb ? ?????.
+echo.
+echo    %~dp0f14.glb
+echo.
+start "" "https://sketchfab.com/3d-models/f-14-tomcat-top-gun-gear-up-downloadable-9d2d0c87539046aa8c2198fcc47cdcf8#download"
+pause

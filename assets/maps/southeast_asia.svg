@@ -1,0 +1,22 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="동남아 밀림 작전 구역">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#88b8d8"/>
+      <stop offset="100%" stop-color="#c8e8c0"/>
+    </linearGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 0.07"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <rect y="160" width="1280" height="560" fill="#3a7838"/>
+  <ellipse cx="360" cy="500" rx="300" ry="140" fill="#2a5828" opacity="0.9"/>
+  <ellipse cx="880" cy="470" rx="360" ry="160" fill="#4a8840" opacity="0.85"/>
+  <path d="M0 520 Q260 470 520 500 T1040 480 L1280 510 L1280 720 L0 720 Z" fill="#306830"/>
+  <path d="M640 720 C700 640 760 600 820 590 C900 575 980 610 1060 590" stroke="#3a6848" stroke-width="22" fill="none" opacity="0.55"/>
+  <ellipse cx="520" cy="560" rx="120" ry="55" fill="#5a9848" opacity="0.65"/>
+  <ellipse cx="760" cy="620" rx="95" ry="42" fill="#486838" opacity="0.55"/>
+  <rect width="1280" height="720" filter="url(#grain)" opacity="0.3"/>
+</svg>

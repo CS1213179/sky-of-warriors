@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="°å ‘ lí">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8aa8c8"/>
+      <stop offset="100%" stop-color="#c8d4e0"/>
+    </linearGradient>
+    <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0f4f8"/>
+      <stop offset="100%" stop-color="#b8c4cc"/>
+    </linearGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.88" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 0.08"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <rect y="220" width="1280" height="500" fill="#687858"/>
+  <path d="M0 520 L180 280 L320 420 L480 220 L640 380 L820 180 L980 340 L1140 240 L1280 400 L1280 720 L0 720 Z" fill="#506048"/>
+  <path d="M120 720 L260 460 L400 560 L560 360 L720 500 L900 320 L1060 440 L1180 360 L1280 480 L1280 720 Z" fill="#384830" opacity="0.85"/>
+  <path d="M480 220 L520 160 L560 220 Z" fill="url(#snow)"/>
+  <path d="M820 180 L860 120 L900 180 Z" fill="url(#snow)"/>
+  <path d="M1140 240 L1175 190 L1210 240 Z" fill="url(#snow)"/>
+  <rect width="1280" height="720" filter="url(#grain)" opacity="0.32"/>
+</svg>

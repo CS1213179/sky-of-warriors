@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sky of Warriors</title>
+  <link rel="stylesheet" href="./css/main.css?v=20260604" />
+
+  <!--
+    Three.js 글로벌(UMD) 빌드. ES 모듈 대신 일반 <script> 태그로 로드해
+    file:// 프로토콜(index.html 직접 더블클릭) 환경에서도 동작하도록 합니다.
+    UMD 빌드는 전역 window.THREE 를 생성합니다.
+    버전 0.149.0 은 CapsuleGeometry(r142+) 등 본 프로젝트가 사용하는 모든 API를 포함합니다.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js?v=149"></script>
+  <script src="./js/vendor/GLTFLoader.js?v=149"></script>
+</head>
+<body>
+  <!-- file:// 또는 서버 미실행 시 안내 (온라인·3D 모델용) -->
+  <div id="server-status-banner" class="server-status-banner hidden" role="status" aria-live="polite">
+    <span id="server-status-text"></span>
+    <button type="button" class="btn btn-ghost server-status-btn hidden" id="server-status-open">브라우저로 열기</button>
+    <button type="button" class="btn btn-ghost server-status-btn hidden" id="server-status-dismiss">닫기</button>
+  </div>
+
+  <script>
+  (function () {
+    var banner = document.getElementById('server-status-banner');
+    var textEl = document.getElementById('server-status-text');
+    var openBtn = document.getElementById('server-status-open');
+    var dismissBtn = document.getElementById('server-status-dismiss');
+    var gameUrl = 'http://127.0.0.1:8787/';
+    var healthUrl = window.SKY_HEALTH_URL || 'http://127.0.0.1:8787/health';
+
+    function showBanner(html, opts) {
+      if (!banner || !textEl) return;
+      textEl.innerHTML = html;
+      banner.classList.remove('hidden');
+      if (openBtn) openBtn.classList.toggle('hidden', !(opts && opts.showOpen));
+      if (dismissBtn) dismissBtn.classList.toggle('hidden', !(opts && opts.showDismiss));
+    }
+
+    openBtn && openBtn.addEventListener('click', function () {
+      window.location.href = gameUrl;
+    });
+    dismissBtn && dismissBtn.addEventListener('click', function () {
+      banner.classList.add('hidden');
+    });
+
+    if (location.protocol === 'http:' || location.protocol === 'https:') {
+      window.SKY_WS_URL = null;
+      return;
+    }
+
+    fetch(healthUrl, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('offline');
+      return r.json();
+    }).then(function () {
+      window.SKY_WS_URL = 'ws://127.0.0.1:8787/ws';
+      showBanner('로컬 서버 연결됨 · <b>온라인 PvP</b> 사용 가능 (전투 메뉴 → 온라인)', { showDismiss: true });
+    }).catch(function () {
+      showBanner(
+        '온라인·F-16 3D 모델을 쓰려면 <b>start-game.bat</b>을 실행하세요. 솔로 전투는 이 창에서도 가능합니다.',
+        { showOpen: true, showDismiss: true },
+      );
+    });
+  })();
+  </script>
+
+  <!-- 3D 렌더 캔버스: BattleManager가 점유하며 메뉴에서는 비활성/숨김 처리됩니다. -->
+  <canvas id="game-canvas" tabindex="0"></canvas>
+
+  <!-- 맵 로딩: 출격 시 선택된 작전 구역 미리보기를 5초간 표시합니다. -->
+  <div id="map-loading-overlay" class="map-loading-overlay hidden" aria-live="polite" aria-hidden="true">
+    <div class="map-loading-card">
+      <div class="map-loading-photo-wrap">
+        <img id="map-loading-img" class="map-loading-photo" src="" alt="" />
+        <div class="map-loading-vignette"></div>
+      </div>
+      <div class="map-loading-meta">
+        <span class="map-loading-tag">OPERATION AREA</span>
+        <h2 id="map-loading-title" class="map-loading-title">—</h2>
+        <p id="map-loading-desc" class="map-loading-desc">작전 구역 로딩 중…</p>
+        <div class="map-loading-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="map-loading-fill" class="map-loading-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로그인 화면 -->
+  <section id="screen-login" class="screen">
+    <div class="menu-card login-card">
+      <h1 class="game-title">Sky of Warriors</h1>
+      <p class="subtitle" id="login-title"
+         data-text-login="파일럿 로그인"
+         data-text-register="파일럿 등록">파일럿 로그인</p>
+      <form id="login-form" class="login-form" autocomplete="on">
+        <label class="login-field">
+          <span>콜사인</span>
+          <input id="login-callsign" type="text" maxlength="16" placeholder="예: FalconAce" autocomplete="username" required />
+        </label>
+        <label class="login-field">
+          <span>비밀번호</span>
+          <input id="login-password" type="password" maxlength="64" placeholder="4자 이상" autocomplete="current-password" required />
+        </label>
+        <p id="login-error" class="login-error" role="alert"></p>
+        <div class="menu-buttons">
+          <button type="button" class="btn btn-primary" data-action="login-submit"
+                  data-text-login="로그인"
+                  data-text-register="등록하고 시작">로그인</button>
+          <button type="button" class="btn btn-ghost" data-action="login-register"
+                  data-text-login="새 파일럿 등록"
+                  data-text-register="이미 계정이 있나요? 로그인">새 파일럿 등록</button>
+        </div>
+      </form>
+      <p class="hint hint-sub">콜사인·비밀번호는 이 기기에만 저장됩니다. 이메일 등 개인정보는 수집하지 않습니다.</p>
+    </div>
+  </section>
+
+  <!-- 메인 메뉴 화면 -->
+  <section id="screen-menu" class="screen">
+    <div class="menu-card">
+      <h1 class="game-title">Sky of Warriors</h1>
+      <p class="subtitle">3인칭 전투기 슈팅 게임</p>
+      <div class="hud-row">
+        <div class="hud-pill">파일럿 <span id="menu-pilot">-</span></div>
+        <div class="hud-pill hud-pill-vs">VS <span id="menu-money">0</span></div>
+        <div class="hud-pill hud-pill-km">KM <span id="menu-km">0</span></div>
+        <div class="hud-pill">현재 기체 <span id="menu-fighter">-</span></div>
+      </div>
+      <div class="menu-buttons">
+        <button class="btn btn-primary" data-action="battle-menu">전투 출격</button>
+        <button class="btn" data-action="shop">상점 (구매 · 업그레이드 · 개량)</button>
+        <button class="btn" data-action="achievements">업적 · 단판 격추 기록</button>
+        <button class="btn btn-ghost" data-action="logout">로그아웃</button>
+      </div>
+      <p class="hint">전투 출격에서 <b>개인전 · 팀전 · 온라인</b> 모드를 선택할 수 있습니다.</p>
+    </div>
+  </section>
+
+  <!-- 로그아웃 확인 -->
+  <div id="logout-confirm-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card confirm-card">
+      <h2>로그아웃</h2>
+      <p class="confirm-message">진짜로 로그아웃 하시겠습니까?</p>
+      <div class="confirm-actions">
+        <button type="button" class="btn btn-primary" data-action="logout-yes">예</button>
+        <button type="button" class="btn" data-action="logout-no">아니오</button>
+      </div>
+      <button type="button" class="btn btn-danger confirm-delete-btn" data-action="logout-delete-account">계정삭제</button>
+    </div>
+  </div>
+
+  <!-- 계정 삭제 확인 -->
+  <div id="delete-account-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card confirm-card">
+      <h2>계정 삭제</h2>
+      <p class="confirm-message">계정을 삭제하시겠습니까?</p>
+      <p class="hint hint-sub">삭제 시 콜사인과 진행 데이터가 이 기기에서 완전히 제거됩니다.</p>
+      <div class="confirm-actions">
+        <button type="button" class="btn btn-danger" data-action="delete-account-yes">예</button>
+        <button type="button" class="btn" data-action="delete-account-no">아니오</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 온라인 매칭: 전역 오버레이 (전투 메뉴·메인 메뉴 어디서든 표시) -->
+  <div id="online-match-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card">
+      <h2>온라인 매칭</h2>
+      <p id="online-match-status">서버 연결 중…</p>
+      <button class="btn btn-ghost" data-action="cancel-match">취소</button>
+    </div>
+  </div>
+
+  <!-- 전투 모드 선택 화면 -->
+  <section id="screen-battle-menu" class="screen">
+    <div class="menu-card battle-menu-card">
+      <h2 class="battle-menu-title">전투 모드 선택</h2>
+      <p class="subtitle">출격 방식을 선택하세요</p>
+      <div class="hud-row">
+        <div class="hud-pill">장착 기체 <span id="battle-menu-fighter">-</span></div>
+      </div>
+      <div class="menu-buttons battle-mode-buttons">
+        <button class="btn btn-primary" data-action="battle-ffa">
+          <span class="mode-label">개인전</span>
+          <span class="mode-desc">FFA · 모든 적이 서로 교전</span>
+        </button>
+        <button class="btn btn-primary" data-action="battle-team">
+          <span class="mode-label">팀전</span>
+          <span class="mode-desc">아군 AI 3기와 협력</span>
+        </button>
+        <button class="btn btn-primary" data-action="battle-online">
+          <span class="mode-label">온라인</span>
+          <span class="mode-desc">실시간 PvP 매칭</span>
+        </button>
+        <button class="btn btn-ghost" data-action="battle-back">← 메뉴로</button>
+      </div>
+    </div>
+
+    <div id="online-mode-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card">
+        <h2>온라인 모드</h2>
+        <p class="hint" style="margin-top:0;">매칭할 전투 규칙을 선택하세요.</p>
+        <div class="menu-buttons">
+          <button class="btn btn-primary" data-action="online-ffa">온라인 개인전</button>
+          <button class="btn btn-primary" data-action="online-team">온라인 팀전</button>
+          <button class="btn btn-ghost" data-action="online-cancel">취소</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 상점 화면 -->
+  <section id="screen-shop" class="screen">
+    <header class="screen-header">
+      <h2>상점</h2>
+      <div class="hud-row">
+        <div class="hud-pill hud-pill-vs">VS <span id="shop-money">0</span></div>
+        <div class="hud-pill hud-pill-km">KM <span id="shop-km">0</span></div>
+        <button class="btn btn-ghost" data-action="back">← 메뉴로</button>
+      </div>
+    </header>
+    <!-- 국가 탭: ShopManager 가 동적으로 버튼을 채웁니다. -->
+    <nav id="shop-tabs" class="country-tabs" aria-label="국가 선택"></nav>
+    <div id="shop-grid" class="grid"></div>
+    <p id="shop-empty" class="hint hidden" style="text-align:center; padding:24px;">해당 국가의 전투기가 아직 등록되어 있지 않습니다.</p>
+
+    <!-- 관리 모달: 보유 기체의 업그레이드 및 개량 진행. ShopManager 가 내용을 채웁니다. -->
+    <div id="manage-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card manage-card">
+        <header class="manage-header">
+          <h3 id="manage-title">기체 관리</h3>
+          <button class="btn btn-ghost" data-action="close-manage">닫기</button>
+        </header>
+        <div id="manage-body" class="manage-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 전투 HUD (BattleManager가 활성화될 때만 표시) -->
+  <section id="screen-battle" class="screen battle-screen">
+    <div class="battle-hud">
+      <!-- 좌상단 미니맵 레이더: BattleManager._updateRadar 가 매 프레임 2D 캔버스에 그림 -->
+      <div class="radar-wrap">
+        <canvas id="hud-radar" width="200" height="200"></canvas>
+        <div class="radar-label">RADAR · 500m</div>
+      </div>
+      <div class="hud-top">
+        <div class="hud-block">
+          <div class="hud-label">HULL</div>
+          <div class="bar"><div id="hud-hp" class="bar-fill bar-hp"></div></div>
+        </div>
+        <div id="hud-p2-block" class="hud-block hidden">
+          <div class="hud-label">OPP HULL</div>
+          <div class="bar"><div id="hud-hp-p2" class="bar-fill bar-hp bar-hp-p2"></div></div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-label">BOOST</div>
+          <div class="bar"><div id="hud-boost" class="bar-fill bar-boost"></div></div>
+        </div>
+        <div class="hud-block stat">
+          <div class="hud-label">SCORE</div>
+          <div id="hud-score" class="hud-value">0</div>
+        </div>
+        <div class="hud-block stat">
+          <div class="hud-label">KILLS</div>
+          <div id="hud-kills" class="hud-value">0</div>
+        </div>
+        <div class="hud-block stat">
+          <div class="hud-label">TIME</div>
+          <div id="hud-time" class="hud-value">05:00</div>
+        </div>
+        <div class="hud-block stat hud-map-block">
+          <div class="hud-label">MAP</div>
+          <div id="hud-map-name" class="hud-value hud-map-name">—</div>
+        </div>
+        <div class="hud-block stat">
+          <div class="hud-label">MODE</div>
+          <div id="hud-game-mode" class="hud-value">개인전</div>
+        </div>
+      </div>
+
+      <!-- 1인칭 콕핏 오버레이: V 키로 1인칭 전환 시 BattleManager 가 표시합니다. -->
+      <div id="cockpit-overlay" class="cockpit-overlay hidden" aria-hidden="true">
+        <div class="cockpit-canopy" aria-hidden="true">
+          <div class="canopy-arch"></div>
+          <div class="canopy-hood"></div>
+        </div>
+
+        <div class="cockpit-glass-hud">
+          <div class="hud-pitch-ladder" id="hud-pitch-ladder" aria-hidden="true"></div>
+          <div class="hud-boresight" aria-hidden="true">
+            <div class="boresight-dot"></div>
+            <div class="boresight-ring"></div>
+          </div>
+          <div class="hud-roll-indicator" id="hud-roll-indicator" aria-hidden="true"></div>
+          <div class="hud-side-block hud-alt-block">
+            <span class="hud-side-lbl">ALT m</span>
+            <span id="cockpit-alt" class="hud-side-val">0000</span>
+          </div>
+          <div class="hud-side-block hud-spd-block">
+            <span class="hud-side-lbl">SPD km/h</span>
+            <span id="cockpit-spd" class="hud-side-val">0000</span>
+            <span id="cockpit-mach" class="hud-side-sub">M0.00</span>
+          </div>
+          <div class="hud-heading-bar">
+            <span id="cockpit-hdg" class="hud-hdg-val">000</span>
+          </div>
+          <div id="lockon-indicator-fp" class="lockon lockon-fp hidden">LOCK</div>
+        </div>
+
+        <div class="cockpit-panel">
+          <div class="panel-mfd panel-mfd-left">
+            <span class="mfd-title">SYS</span>
+            <div class="mfd-row"><span>HULL</span><span id="cockpit-hull-pct">100%</span></div>
+            <div class="mfd-row"><span>BOOST</span><span id="cockpit-boost-pct">100%</span></div>
+          </div>
+          <div class="panel-center">
+            <div id="fp-radar-slot" class="fp-radar-slot" aria-hidden="true"></div>
+            <div class="fp-panel-labels">
+              <span class="view-tag">COCKPIT · 1ST PERSON</span>
+              <span class="view-hint">V · 시점 전환</span>
+            </div>
+          </div>
+          <div class="panel-mfd panel-mfd-right">
+            <span class="mfd-title">WPN</span>
+            <div class="mfd-row"><span>MSL</span><span id="cockpit-msl">0</span></div>
+            <div class="mfd-row"><span>FLR</span><span id="cockpit-flr">0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 화면 중앙의 크로스헤어와 락온 표시 (3인칭) -->
+      <div class="crosshair">
+        <div class="reticle"></div>
+        <div id="pursuit-scope" class="pursuit-scope hidden" aria-hidden="true"></div>
+        <div id="mg-hit-marker-wrap" class="mg-hit-marker-wrap hidden" aria-hidden="true">
+          <div id="mg-hit-marker" class="mg-hit-marker">
+            <span class="mg-hit-x" aria-hidden="true"></span>
+            <span class="mg-hit-label">적중</span>
+          </div>
+        </div>
+        <div id="lockon-indicator" class="lockon hidden">LOCK</div>
+      </div>
+
+      <!-- 기관총 피격: 적·아군 기관총에 맞았을 때 잠깐 표시 -->
+      <div id="mg-hit-received" class="mg-hit-received hidden" aria-live="polite">
+        <span class="mg-hit-received-icon">●</span>
+        <span class="mg-hit-received-text">기관총 피격</span>
+      </div>
+
+      <!-- 추격: 적 락온(LOCK) 2초 유지 후 F 키 또는 버튼으로 진입 -->
+      <button id="pursuit-prompt" class="pursuit-prompt hidden" type="button" aria-label="추격">
+        추격 <span class="pursuit-key">[F]</span>
+      </button>
+
+      <!-- 고도 경고: 1·3인칭 공통 (BattleManager 가 AGL 기준으로 표시) -->
+      <div id="altitude-warning" class="altitude-warning hidden" aria-live="assertive">
+        <span class="pull-up-en">PULL UP</span>
+        <span class="pull-up-ko">고도 경고</span>
+      </div>
+
+      <!-- 미사일 피격 경고: BattleManager 가 활성 적 미사일을 감지하면 표시 -->
+      <div id="incoming-lock-warning" class="lockon-alert hidden" aria-live="assertive">
+        <span class="alert-icon">◆</span>
+        <span class="alert-text">LOCK ON</span>
+        <span class="alert-text-ko">락온 경보</span>
+      </div>
+      <div id="missile-warning" class="missile-alert hidden" aria-live="assertive">
+        <span class="alert-icon">▲</span>
+        <span class="alert-text">MISSILE WARNING</span>
+        <span id="missile-warning-count" class="alert-count"></span>
+      </div>
+      <!-- 화면 가장자리 적색 비네팅 (위협 강조용) -->
+      <div id="missile-vignette" class="danger-vignette hidden"></div>
+
+      <div class="hud-bottom">
+        <div class="hud-pill">기관총 <span id="hud-mg">300</span></div>
+        <div class="hud-pill">미사일 <span id="hud-missiles">0</span></div>
+        <div id="base-reload-wrap" class="hud-block base-reload-wrap hidden">
+          <label>기지 재장전</label>
+          <div class="bar bar-thin"><div id="base-reload-fill" class="bar-fill bar-base-reload"></div></div>
+        </div>
+        <div class="hud-pill">플레어 <span id="hud-flares">0</span></div>
+        <div class="hud-pill hud-speed-pill">속도 <span id="hud-speed">M0.00 · 0 km/h</span></div>
+        <div id="hud-cobra" class="hud-pill hud-cobra hidden">코브라 <span id="hud-cobra-hint">[C]</span></div>
+        <div id="hud-pursuit" class="hud-pill hud-pursuit hidden">추격 <span id="hud-pursuit-hint">[F]</span></div>
+        <div id="hud-wing-fold" class="hud-pill hud-wing-fold hidden">가변익 <span id="hud-wing-fold-hint">접기 [G]</span></div>
+      </div>
+    </div>
+
+    <!-- 전투 결과 모달 -->
+    <div id="battle-result" class="modal hidden">
+      <div class="modal-card">
+        <h2 id="result-title">전투 종료</h2>
+        <ul class="result-list">
+          <li>격추 수 <span id="result-kills">0</span></li>
+          <li>획득 점수 <span id="result-score">0</span></li>
+          <li>지급 보상 <span id="result-reward">0 VS</span></li>
+          <li>단판 최고 기록 <span id="result-best-kills">0</span></li>
+          <li id="result-km-row" class="hidden">획득 KM <span id="result-km-earned">0</span></li>
+        </ul>
+        <div id="result-ach-wrap" class="result-ach-wrap hidden">
+          <p class="result-ach-title">신규 업적</p>
+          <ul id="result-ach-list" class="result-ach-list"></ul>
+        </div>
+        <div class="menu-buttons">
+          <button class="btn btn-primary" data-action="replay">다시 출격</button>
+          <button class="btn" data-action="to-menu">메뉴로</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 업적 화면 -->
+  <section id="screen-achievements" class="screen">
+    <header class="screen-header">
+      <h2>업적 · 단판 격추</h2>
+      <div class="hud-row">
+        <div class="hud-pill">단판 최고 <span id="ach-best-kills">0</span>격추</div>
+        <div class="hud-pill hud-pill-km">KM <span id="ach-km">0</span></div>
+        <div class="hud-pill">달성 <span id="ach-unlocked-count">0</span>개</div>
+        <button class="btn btn-ghost" data-action="ach-back">← 메뉴로</button>
+      </div>
+    </header>
+    <p class="hint ach-intro">한 판에서 격추한 수의 <b>최고 기록</b>으로 업적이 해제됩니다. 업적 1개당 KM 1개가 지급됩니다.</p>
+
+    <ul id="ach-list" class="ach-list"></ul>
+
+    <footer class="ach-footer">
+      <p id="ach-km-summary" class="ach-km-summary"></p>
+      <button type="button" class="btn btn-primary" id="ach-open-upgrade" data-action="ach-open-upgrade">KM 업그레이드</button>
+    </footer>
+
+    <!-- KM 플레이어 버프 (하단 업그레이드 버튼으로 표시) -->
+    <section id="km-buff-panel" class="km-buff-panel hidden" aria-labelledby="km-buff-title" hidden>
+      <div class="km-buff-panel-head">
+        <h3 id="km-buff-title" class="km-buff-title">KM 플레이어 버프</h3>
+        <button type="button" class="btn btn-ghost" data-action="ach-close-upgrade">업적 목록으로</button>
+      </div>
+      <p class="hint km-buff-intro">KM 1개를 소비해 아래 네 가지 중 하나를 강화합니다. 이미 선택한 버프를 바꾸려면 <b>5,000 VS</b>가 필요합니다.</p>
+      <p id="km-buff-status" class="km-buff-status"></p>
+      <div id="km-buff-cards" class="km-buff-cards" role="radiogroup" aria-label="KM 버프 종류"></div>
+      <div class="km-buff-actions">
+        <button type="button" class="btn btn-primary" id="km-buff-spend" data-action="km-buff-spend">KM 1 소비 · 강화</button>
+        <button type="button" class="btn btn-ghost hidden" id="km-buff-change" data-action="km-buff-change">버프 변경 · 5,000 VS</button>
+      </div>
+      <p id="km-buff-msg" class="km-buff-msg" role="status" aria-live="polite"></p>
+    </section>
+  </section>
+
+  <!--
+    게임 부트스트랩.
+    ES 모듈을 쓰지 않고 일반 <script> 로 의존성 순서대로 로드합니다.
+    각 파일은 IIFE 로 자체 캡슐화되며 window.Sky 네임스페이스를 통해 서로 참조합니다.
+    이 방식 덕분에 index.html 을 더블클릭(file://)으로 열어도 정상 동작합니다.
+  -->
+  <script src="./data/fighters.js?v=20260620"></script>
+  <script src="./js/core/currency.js?v=20260604"></script>
+  <script src="./js/core/Achievements.js?v=20260604"></script>
+  <script src="./js/core/KmBuffs.js?v=20260604"></script>
+  <script src="./js/core/NetManager.js?v=20260609"></script>
+  <script src="./js/core/InputManager.js?v=20260604"></script>
+  <script src="./js/core/ObjectPool.js?v=20260604"></script>
+  <script src="./js/core/GameState.js?v=20260618"></script>
+  <script src="./js/core/GameStateFallback.js?v=20260604"></script>
+  <script src="./js/core/AuthManager.js?v=20260618"></script>
+  <script src="./js/core/AircraftModelLoader.js?v=20260620"></script>
+  <script src="./js/entities/Aircraft.js?v=20260620"></script>
+  <script src="./js/managers/SceneManager.js?v=20260604"></script>
+  <script src="./js/managers/LoginManager.js?v=20260604"></script>
+  <script src="./js/managers/MenuManager.js?v=20260604"></script>
+  <script src="./js/managers/BattleMenuManager.js?v=20260604"></script>
+  <script src="./js/managers/ShopManager.js?v=20260610"></script>
+  <script src="./js/managers/AchievementManager.js?v=20260604"></script>
+  <script src="./js/managers/BattleManager.js?v=20260620"></script>
+  <script src="./js/main.js?v=20260604"></script>
+  <!-- 업적 화면: 외부 JS 캐시·로드 실패와 무관하게 동작하는 최종 페인트 -->
+  <script>
+  (function () {
+    var TIERS = [1, 2, 3, 5, 7, 10, 15, 20, 25];
+    var NAMES = [
+      '\uCCAB \uACA9\uCD94', '\uB354\uBE08', '\uD504\uB85C', '\uC5D0\uC774\uC2A4',
+      '\uD589\uC6B4\uC758 \uC870\uC885\uC0AC', '\uB354\uBE08 \uC5D0\uC774\uC2A4',
+      '\uD2B8\uB9AC\uD508 \uC5D0\uC774\uC2A4', '\uC5D0\uC774\uC2A4 \uC624\uBE0C \uC5D0\uC774\uC2A4'
+    ];
+    var DISPLAY = 24;
+
+    function tierThreshold(i) {
+      if (i < TIERS.length) return TIERS[i];
+      return 25 + (i - TIERS.length + 1) * 5;
+    }
+    function tierName(i) {
+      if (i < NAMES.length) return NAMES[i];
+      return '\uC5D0\uC774\uC2A4 \uC624\uBE0C \uC5D0\uC774\uC2A4 ' + (i - NAMES.length + 1);
+    }
+    function readSave() {
+      try {
+        var Sky = window.Sky || {};
+        var Auth = Sky.AuthManager;
+        var id = Auth && Auth.getAccountId ? Auth.getAccountId() : null;
+        var key = id ? 'sky_of_warriors:save:v1:' + id : 'sky_of_warriors:save:v1';
+        var raw = localStorage.getItem(key);
+        if (!raw) return null;
+        var data = JSON.parse(raw);
+        var ach = data.achievements || {};
+        return {
+          km: typeof data.km === 'number' ? data.km : (ach.unlockedTier || 0),
+          best: ach.bestSingleBattleKills || 0,
+          unlocked: ach.unlockedTier || 0
+        };
+      } catch (e) { return null; }
+    }
+    function resolveState() {
+      var GS = window.Sky && window.Sky.GameState;
+      if (GS) {
+        var ach = GS.achievements || {};
+        return { km: GS.km || 0, best: ach.bestSingleBattleKills || 0, unlocked: ach.unlockedTier || 0 };
+      }
+      return readSave() || { km: 0, best: 0, unlocked: 0 };
+    }
+    function paintInline(root) {
+      var screen = root || document.getElementById('screen-achievements');
+      if (!screen) return false;
+      var st = resolveState();
+      var bestEl = screen.querySelector('#ach-best-kills');
+      var kmEl = screen.querySelector('#ach-km');
+      var cntEl = screen.querySelector('#ach-unlocked-count');
+      var list = screen.querySelector('#ach-list');
+      var summary = screen.querySelector('#ach-km-summary');
+      if (bestEl) bestEl.textContent = String(st.best);
+      if (kmEl) kmEl.textContent = String(st.km);
+      if (cntEl) cntEl.textContent = String(st.unlocked);
+      if (summary) summary.textContent = '\uBCF4\uC720 KM ' + st.km;
+      if (list) {
+        var html = '';
+        for (var t = 0; t < DISPLAY; t++) {
+          var th = tierThreshold(t);
+          var done = t < st.unlocked;
+          html += '<li class="ach-item' + (done ? ' unlocked' : '') + '">' +
+            '<span class="ach-status" aria-hidden="true">' + (done ? '\u2713' : '\u2013') + '</span>' +
+            '<span class="ach-name">' + tierName(t) + '</span>' +
+            '<span class="ach-reward">\uB2E8\uD310 ' + th + '\uACA9 \u00B7 +1 KM</span></li>';
+        }
+        list.innerHTML = html;
+      }
+      screen.setAttribute('data-ach-painted', String(Date.now()));
+      return true;
+    }
+    function paintAchievementsScreen(root) {
+      var mod = window.Sky && window.Sky.Achievements && window.Sky.Achievements.paintAchievementsScreen;
+      if (typeof mod === 'function') {
+        try {
+          if (mod(root)) return true;
+        } catch (err) {
+          console.warn('[Achievements] module paint failed, inline fallback', err);
+        }
+      }
+      return paintInline(root);
+    }
+    window.Sky = window.Sky || {};
+    window.Sky.paintAchievementsScreen = paintAchievementsScreen;
+    function schedulePaint() {
+      var screen = document.getElementById('screen-achievements');
+      if (!screen || !screen.classList.contains('active')) return;
+      paintAchievementsScreen(screen);
+      requestAnimationFrame(function () { paintAchievementsScreen(screen); });
+    }
+    var achScreen = document.getElementById('screen-achievements');
+    if (achScreen) {
+      new MutationObserver(schedulePaint).observe(achScreen, { attributes: true, attributeFilter: ['class'] });
+    }
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('[data-action="achievements"]')) {
+        setTimeout(schedulePaint, 0);
+        setTimeout(schedulePaint, 100);
+        setTimeout(schedulePaint, 300);
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

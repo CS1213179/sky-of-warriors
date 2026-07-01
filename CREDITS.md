@@ -9,28 +9,40 @@
 | **??** | ?? ??? ?? · ??? ?? ???? |
 | **??** | 2026 |
 
+?? ??, UI, ???(????) ?? ??? ???? ??????.  
+??? ?? ??: `data/credits.js` ? `creator`
+
 ---
 
-## ??? ?? ?? (3D ?? GLB)
+## ?? 3D ?? (Hugging Face GLB)
 
-### Hugging Face — cutechicken / 3D Air Combat Simulator (CC BY-NC 4.0)
+**??:** [3D Air Combat Simulator](https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator) by **cutechicken**  
+**????:** [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) (???)  
+**??:** *3D Air Combat Simulator* by cutechicken — CC BY-NC 4.0
 
-| ?? | ?? | ?? |
-|------|------|------|
-| F-15 · F-16 · F-22 | f15.glb · f16.glb · f22.glb | models/f-15.glb ? |
-| MiG-29 | mig29.glb | models/mig-29.glb |
-| Su-35 | su35.glb | models/su-35.glb |
-| Su-57 | su57.glb | models/su-57.glb |
+| ?? ?? | GLB ?? | HF ?? |
+|-----------|----------|---------|
+| F-15 Eagle / C / E / EX | f15.glb | models/f-15.glb |
+| F-16 Fighting Falcon / C / E / V | f16.glb | models/f-16.glb |
+| F-22 Raptor | f22.glb | models/f-22.glb |
+| MiG-29A / C / M / MiG-35 | mig29.glb | models/mig-29.glb |
+| Su-27 / Su-30 / Su-32 / Su-35 | su35.glb | models/su-35.glb |
+| Su-57 Felon | su57.glb | models/su-57.glb |
 
-??: [3D Air Combat Simulator](https://huggingface.co/spaces/cutechicken/3D-Airforce-Simulator)  
-??: *3D Air Combat Simulator* by cutechicken — CC BY-NC 4.0
+> Su-27·30·32? HF? ?? GLB? ?? Flanker ?? `su35.glb`? ?????.
 
-### Sketchfab (CC BY 4.0) — ?? ???? ??
+---
 
-| ?? | ?? | ?? |
-|------|------|------|
-| F-14 | f14.glb | [dwsd](https://sketchfab.com/dwsd) |
-| F/A-18E | fa18.glb | [andertan](https://sketchfab.com/andertan) |
+## ?? ?? 3D ?? (???)
+
+`js/entities/Aircraft.js`?? ?? ??·???????.
+
+| ?? | ?? |
+|------|------|
+| ?? | F-14 Tomcat, F/A-18E Super Hornet |
+| ?? | Eurofighter Typhoon, Dassault Rafale, Panavia Tornado |
+| ?? | KF-21 Boramae, FA-50 Golden Eagle |
+| ?? | Chengdu J-10, J-20 Mighty Dragon |
 
 ---
 
@@ -39,4 +51,15 @@
 | ?? | ???? |
 |------|----------|
 | [Three.js](https://threejs.org/) | MIT |
-| ??? ?? (GLB ?? ?) | ?? ??? |
+
+---
+
+## ?? (???, ?? ???)
+
+| ?? | HF ?? | ?? |
+|------|---------|------|
+| f35.glb | models/f-35.glb | ?? |
+| a10.glb | models/a-10.glb | ??? |
+| su57b.glb | models/su-57b.glb | Su-57 ?? ?? |
+
+??? ????: `assets/models/SOURCE.txt`
